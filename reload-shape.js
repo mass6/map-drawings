@@ -8,7 +8,7 @@
  *  * @type {{position: {lat: number, long: number}, zoomLevel: number}}
  */
 var settings = {
-    mapQuestionType: 'single-polygon',
+    mapQuestionType: 'polygon-area',
     position: {
         lat: 55.6773329,  // <-- EdiT This
         long: 12.5514528  // <-- EdIT This
@@ -72,13 +72,9 @@ function setSingleTimer(callback) {
 
 
 $(document).ready(function () {
-
     if (!settings.testMode) {
         answerInput.hide();
     }
-
-
-
 
     (function includeGoogle() {
         if (typeof google === 'undefined') {
@@ -167,8 +163,8 @@ $(document).ready(function () {
                 google.maps.event.addDomListener(saveBtn, "click", function (event) {
                     var mDescription = contentString.find('textarea.save-description')[0].value; //description input field value
                     descriptionArray.push(mDescription);
-                    //call save marker function
-                    save_polygon(polygon, mDescription);
+                    //call save shape function
+                    saveShape(polygon, mDescription);
                     infowindow.close();
 
                 });//event when click on 'Save'
@@ -181,7 +177,7 @@ $(document).ready(function () {
             //add click listener to remove marker button
             google.maps.event.addDomListener(removeBtn, "click", function (event) {
                 infowindow.close();
-                remove_polygon(polygon, descriptionArray);
+                removeShape(polygon, descriptionArray);
                 event.preventDefault();//prevent reload of the page
             });
         }
@@ -207,7 +203,7 @@ $(document).ready(function () {
             // Handle the drag end case for the marker, which becomes unselected
             google.maps.event.addListener(polygon, "dragend", function () {
                 infowindow.setPosition(getCoordates(polygon)[0]);
-                save_polygon(polygon, descriptionArray[0]);
+                saveShape(polygon, descriptionArray[0]);
             });
         }
         var setInfowindowContent = function(infowindow, contentString)
@@ -277,16 +273,16 @@ $(document).ready(function () {
         }
 
         var fieldData = $('#answer_map').val();
-        if (fieldData !== '' && fieldData !== '{}') {
+        if (typeof fieldData !== 'undefined' && fieldData !== '' && fieldData.length !== 2) {
             loadShape(JSON.parse(fieldData))
         }
     }
 
     //############### Remove Marker Function ##############
-    function remove_polygon(polygon, descriptionArray) {
+    function removeShape(polygon, descriptionArray) {
         answerObject = {
         };
-        answerInput.val(JSON.stringify(answerObject));
+        answerInput.val(JSON.stringify(answerObject, null, 4));
         polygon.setMap(null);
         drawingManager.setOptions({
             drawingControl: true
@@ -294,7 +290,7 @@ $(document).ready(function () {
     }
 
     //############### Save Marker Function ##############
-    function save_polygon(polygon, mDescription) {
+    function saveShape(polygon, mDescription) {
         var description = mDescription;
         if (typeof mDescription === 'undefined') {
             description = answerObject.description;
@@ -303,7 +299,7 @@ $(document).ready(function () {
             coordinates: getCoordates(polygon),
             description: description
         };
-        answerInput.val(JSON.stringify(answerObject));
+        answerInput.val(JSON.stringify(answerObject, null,  4));
         drawingManager.setOptions({
             drawingControl: false
         });
