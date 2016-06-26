@@ -32,25 +32,46 @@ var answerObject = {
 var answerInput = $('#answer' + SGQA);
 
 //Edit form to be displayed with new marker
+//Edit form to be displayed with new marker
 var EditForm =
     '<div class="marker-info-win" style="min-width: 500px;">' +
     '<div class="marker-inner-win">' +
     '<div class="wrapper">' +
     '<div class="row">' +
-    '<div class="col-md-6">' +
+    '<div class="col-md-8">' +
     '<div id="pano-div" style="height:200px;background:yellow"></div>' +
     '</div>' +
-    '<div class="col-md-6">' +
+    '<div class="col-md-4">' +
     '<form action=" " method="POST" name="SaveMarker" id="SaveMarker" class="">' +
+    '<div class="form-group infowindow-wrapper marker-edit">' +
+    '<label for="prescategory">Select1 Label: </label>' +
+    '<select name="selectOne" id="SelectOne" class="save-selectone form-control">' +
+    '<option selected="selected" disabled="true">-- Select --</option>' +
+    '<option value="Option1">Option1</option>' +
+    '<option value="Option2">Option2</option>' +
+    '<option value="Option3">Option3</option>' +
+    '</select>' +
+    '<label for="selectTwo">Select2 Label: </label>' +
+    '<select name="selectTwo" id="selectTwo" class="save-selecttwo form-control">' +
+    '<option selected="selected" disabled="true">-- Select --</option>' +
+    '<option value="Option1">Option1</option>' +
+    '<option value="Option2">Option2</option>' +
+    '<option value="Option3">Option3</option>' +
+    '</select>' +
+    '</div>' +
+    '</form>' +
+    '</div>' +
+    '</div>' +
+    '<div class="row" style="margin-top: 20px;">' +
+    '<div class="col-md-12">' +
     '<div class="form-group">' +
     '<label for="issue-description">' + settings.commentFieldLabel + '</label>' +
-    '<textarea class="form-control save-description" rows="6" name="issue-description"></textarea>' +
+    '<textarea class="form-control save-description" rows="3" name="issue-description"></textarea>' +
     '</div>' +
     '<div class="form-group actions">' +
     '<button type="button" name="save-marker" class="save-marker btn btn-success btn-sm" title="Save info">Save</button>' +
     '<button name="remove-marker" class="remove-marker btn btn-danger btn-sm" title="Delete point" style="margin-left:6px;">Delete point</button>' +
     '</div>' +
-    '</form>' +
     '</div>' +
     '</div>' +
     '</div>' +
@@ -205,9 +226,11 @@ $(document).ready(function () {
         var saveBtn = contentString.find('button.save-marker')[0];
         if (typeof saveBtn !== 'undefined') {
             google.maps.event.addDomListener(saveBtn, "click", function (event) {
+                var mSelectOne = contentString.find('select.save-selectone')[0].value; //actvity selected
+                var mSelectTwo = contentString.find('select.save-selecttwo')[0].value; //actvity selected
                 var mDescription = contentString.find('textarea.save-description')[0].value; //description input field value
                 descriptionArray.push(mDescription);
-                saveMarker(marker, mDescription);
+                saveMarker(marker, mSelectOne, mSelectTwo, mDescription);
                 infowindow.close();
                 map.setOptions({
                     streetViewControl: false
@@ -391,8 +414,9 @@ $(document).ready(function () {
 
         var fieldData = answerInput.val();
         if (typeof fieldData !== 'undefined' && fieldData !== '' && fieldData.length !== 2) {
+            console.log('load it');
             answerObject = JSON.parse(fieldData);
-            loadMarkers(JSON.parse(fieldData));
+            loadMarkers(JSON.parse(fieldData))
         }
     }
 
@@ -404,7 +428,7 @@ $(document).ready(function () {
     }
 
     //############### Save Marker Function ##############
-    function saveMarker(marker, mDescription) {
+    function saveMarker(marker, mSelectOne, mSelectTwo, mDescription) {
         //Save new marker using jQuery Ajax
         var mlatlong = marker.getPosition().toUrlValue(); //get marker position
         var mzoom = map.getZoom();
@@ -414,6 +438,8 @@ $(document).ready(function () {
             zoom: mzoom,
             pano: marker.panorama.getPano(),
             pov: marker.panorama.getPov(),
+            selectOne: mSelectOne,
+            mSelectTwo: mSelectTwo,
             description: mDescription
         };
         marker.setDraggable(false); //set marker to fixed
