@@ -439,7 +439,7 @@ $(document).ready(function () {
             pano: marker.panorama.getPano(),
             pov: marker.panorama.getPov(),
             selectOne: mSelectOne,
-            mSelectTwo: mSelectTwo,
+            selectTwo: mSelectTwo,
             description: mDescription
         };
         marker.setDraggable(false); //set marker to fixed

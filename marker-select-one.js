@@ -6,7 +6,7 @@
  * 2. Zoom level:  0-22,  (higher number is more zoomed in)*
  */
 var settings = {
-    mapQuestionType: 'marker-basic', // <-- Edit This: marker-basic, marker-one-select, marker-two-select, polygon-area
+    mapQuestionType: 'marker-select-one', // <-- Edit This: marker-basic, marker-select-one, marker-select-two, polygon-area
     commentFieldLabel: 'Comment', // <-- Edit This: Label above comment field
     position: {
         lat: 55.6773329,  // <-- Edit This: initial long/lat of map
